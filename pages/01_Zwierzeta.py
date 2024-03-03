@@ -8,6 +8,7 @@ import time
 from sqlalchemy.orm import sessionmaker
 import random
 from datetime import datetime
+import uuid
 
 
 st.set_page_config(
@@ -60,9 +61,28 @@ def dataframe_with_selections(df):
         selected_rows = edited_df[edited_df.Zaznacz]
         return selected_rows.drop('Zaznacz', axis=1)
 
+st.header('Panel zwierząt do adopcji lub adoptowanych')
+st.write('Wyszukaj na stronie')
+col1, col2 = st.columns(2)
+
+# Unikalne klucze dla każdego widgetu
+r_masa_key = str(uuid.uuid4())
+r_plec_key = str(uuid.uuid4())
+r_opis_key = str(uuid.uuid4())
+r_statusZwierzecia_key = str(uuid.uuid4())
+r_dataPrzyjecia_key = str(uuid.uuid4())
+r_numerChip_key = str(uuid.uuid4())
+r_wiek_key = str(uuid.uuid4())
+i_boks_key = str(uuid.uuid4())
 
 
-stmt = sqa.select(Zwierze)
+r_imie_zwierze = col1.text_input(label='Imię zwierzęcia', placeholder='Wprowadź imię zwierzęcia...', value='')
+r_typ_rasy = col2.text_input(label='Typ rasy', placeholder='Wprowadź nazwę rasy...', value='')
+
+stmt = sqa.select(Zwierze).\
+      where(Zwierze.imie.like(f'%{r_imie_zwierze}')).\
+      where(Zwierze.typRasy.like(f'%{r_typ_rasy}%'))
+
 # stmt #zakomentować aby nie wyświetlać głupiego selecta na stronie
 df = pd.read_sql(stmt, session.bind)
 
